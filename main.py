@@ -8,9 +8,9 @@ cap.set(3, 1280)
 cap.set(4, 720)
 
 imgBack = cv2.imread('Resources/Background.png')
-imgBall = cv2.imread('Resources/Ball.png', cv2.IMREAD_UNCHANGED)
-imgBat1 = cv2.imread('Resources/bat1.png', cv2.IMREAD_UNCHANGED)
-imgBat2 = cv2.imread('Resources/bat2.png', cv2.IMREAD_UNCHANGED)
+imgBall = cv2.imread('Resources/ball_2.png', cv2.IMREAD_UNCHANGED)
+imgBat1 = cv2.imread('Resources/bat_1.png', cv2.IMREAD_UNCHANGED)
+imgBat2 = cv2.imread('Resources/bat_2.png', cv2.IMREAD_UNCHANGED)
 imgGameOver = cv2.imread('Resources/gameOver.png')
 
 detector = HandDetector(detectionCon=0.8, maxHands=2)
@@ -45,7 +45,7 @@ while True:
             if hand['type'] == 'Left':
                 img = cvzone.overlayPNG(img, imgBat1, [59, y1])
                 # bounce ball off the bat
-                if 59 < ballPos[0] < 59 + w1 and y1 < ballPos[1] < y1 + h1:
+                if 70 < ballPos[0] < 70 + w1 and y1 < ballPos[1] < y1 + h1:
                     speedX = -speedX
                     ballPos[0] += 30
                     score[0] += 1
@@ -53,7 +53,7 @@ while True:
             if hand['type'] == 'Right':
                 img = cvzone.overlayPNG(img, imgBat2, [1195, y1])
                 # bounce ball off the bat
-                if 1195 - w1 - 30 < ballPos[0] < 1195 - 30 and y1 < ballPos[1] < y1 + h1:
+                if 1195 - w1 - 20 < ballPos[0] < 1195 - 20 and y1 < ballPos[1] < y1 + h1:
                     speedX = -speedX
                     ballPos[0] -= 30
                     score[1] += 1
@@ -87,7 +87,7 @@ while True:
     img[580:700, 20:233] = cv2.resize(imgRaw, (213, 120))
 
     # Finally show the image in UI
-    cv2.imshow("Image", img)
+    cv2.imshow("ping pong game", img)
     key = cv2.waitKey(1)
     if key == ord('r'):
         ballPos = [100, 100]
@@ -96,4 +96,14 @@ while True:
         gameOver = False
         score = [0, 0]
         imgGameOver = cv2.imread('Resources/gameOver.png')
+
+    # if we press esc
+    if key == 27:
+        print('esc is pressed closing all windows')
+        cv2.destroyAllWindows()
+        break
+
+    if cv2.getWindowProperty("ping pong game", cv2.WND_PROP_VISIBLE) < 1:
+        print("ALL WINDOWS ARE CLOSED")
+        break
 
