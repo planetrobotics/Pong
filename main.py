@@ -20,11 +20,14 @@ ballPos = [100, 100]
 speedX = 15
 speedY = 15
 gameOver = False
+score = [0, 0]
 
 while True:
     success, img = cap.read()
 
     img = cv2.flip(img, 1) #so the image is flipped in horizontal direction
+
+    imgRaw = img.copy()
 
     # Find the hand and its landmarks
     hands, img = detector.findHands(img, flipType=False)  # don't flip the image, since it is already flipped
@@ -45,6 +48,7 @@ while True:
                 if 59 < ballPos[0] < 59 + w1 and y1 < ballPos[1] < y1 + h1:
                     speedX = -speedX
                     ballPos[0] += 30
+                    score[0] += 1
 
             if hand['type'] == 'Right':
                 img = cvzone.overlayPNG(img, imgBat2, [1195, y1])
@@ -52,6 +56,7 @@ while True:
                 if 1195 - w1 - 30 < ballPos[0] < 1195 - 30 and y1 < ballPos[1] < y1 + h1:
                     speedX = -speedX
                     ballPos[0] -= 30
+                    score[1] += 1
 
     # Game over
     if ballPos[0] < 40 or ballPos[0] > 1200:
@@ -63,6 +68,8 @@ while True:
 
     if gameOver:    # check if game over
         img = imgGameOver
+        cv2.putText(img, str(score[0] + score[1]).zfill(2), (585, 360), cv2.FONT_HERSHEY_COMPLEX, 3, (200, 0, 200), 5)
+
     else: # ongoing game
         # Move the ball
         ballPos[0] += speedX
@@ -71,8 +78,22 @@ while True:
         # Draw the ball
         img = cvzone.overlayPNG(img, imgBall, ballPos)
 
+        # display scores
+        cv2.putText(img, str(score[0]), (300, 650), cv2.FONT_HERSHEY_COMPLEX, 3, (255, 255, 255), 5)
+        cv2.putText(img, str(score[1]), (900, 650), cv2.FONT_HERSHEY_COMPLEX, 3, (255, 255, 255), 5)
+
+
+    # add extra on bottom left to show this is computer vision game
+    img[580:700, 20:233] = cv2.resize(imgRaw, (213, 120))
 
     # Finally show the image in UI
     cv2.imshow("Image", img)
-    cv2.waitKey(1)
+    key = cv2.waitKey(1)
+    if key == ord('r'):
+        ballPos = [100, 100]
+        speedX = 15
+        speedY = 15
+        gameOver = False
+        score = [0, 0]
+        imgGameOver = cv2.imread('Resources/gameOver.png')
 
